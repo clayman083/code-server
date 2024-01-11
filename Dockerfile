@@ -3,7 +3,7 @@ ARG VERSION
 FROM lscr.io/linuxserver/code-server:${VERSION}
 
 RUN echo "**** install libraries ****" && \
-  apt-get install -y \
+  apt-get update && apt-get install -y \
     build-essential gdb lcov pkg-config \
     libbz2-dev libffi-dev libgdbm-dev libgdbm-compat-dev liblzma-dev \
     libncurses5-dev libreadline6-dev libsqlite3-dev libssl-dev \
@@ -25,4 +25,6 @@ RUN echo "**** install libraries ****" && \
 
   echo "**** install python packages ****" && \
     python3 -m pip install --no-cache-dir --quiet -U pip && \
-    python3 -m pip install --no-cache-dir --quiet -U poetry
+    python3 -m pip install --no-cache-dir --quiet -U poetry && \
+
+  apt autoremove -y -qq > /dev/null
