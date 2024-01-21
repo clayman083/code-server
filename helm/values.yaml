@@ -1,0 +1,53 @@
+# Default values for helm-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicas: 1
+
+image:
+  name: ghcr.io/clayman083/code-server
+  tag: master
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+
+imagePullSecrets: []
+
+env: []
+
+ports:
+  - containerPort: 5000
+
+ingress:
+  enabled: false
+
+  rules: []
+
+resources:
+  requests:
+    cpu: 500m
+    memory: 512Mi
+  limits:
+    cpu: 1500m
+    memory: 2048Mi
+
+livenessProbe: {}
+  # enabled: false
+  # path: /-/health
+  # port: 5000
+  # period: 10
+
+readinessProbe: {}
+  # enabled: false
+  # path: /-/health
+  # port: 5000
+  # period: 10
+
+serviceAccount:
+  name: micro
+
+metrics:
+  prometheus:
+    path: /-/metrics
+    port: 5000
+
+user: {}
