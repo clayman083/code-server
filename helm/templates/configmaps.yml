@@ -1,0 +1,12 @@
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-user-settings
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+data:
+  settings.json: |
+{{ default ("{}") .Values.user.settings | indent 4 }}

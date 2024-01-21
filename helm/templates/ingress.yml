@@ -1,0 +1,68 @@
+{{- if .Values.ingress.enabled }}
+---
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .Release.Name }}-redirectscheme
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+spec:
+  redirectScheme:
+    scheme: https
+    permanent: true
+
+
+---
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Release.Name }}-insecure
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+spec:
+  entryPoints:
+    - web
+  routes:
+    {{- range .Values.ingress.rules }}
+    - kind: Rule
+      match: {{ . }}
+      middlewares:
+        - name: {{ $.Release.Name }}-redirectscheme
+          namespace: {{ $.Release.Namespace }}
+      services:
+        - kind: Service
+          name: {{ $.Release.Name }}
+          namespace: {{ $.Release.Namespace }}
+          port: 5000
+    {{ end }}
+
+
+---
+
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Release.Name }}-secure
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+spec:
+  entryPoints:
+    - websecure
+  tls:
+    certResolver: letsencrypt
+  routes:
+    {{- range .Values.ingress.rules }}
+    - kind: Rule
+      match: {{ . }}
+      services:
+        - kind: Service
+          name: {{ $.Release.Name }}
+          namespace: {{ $.Release.Namespace }}
+          port: 5000
+    {{ end }}
+{{ end }}
